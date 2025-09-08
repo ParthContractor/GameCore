@@ -16,6 +16,10 @@ Swift 6 • iOS 17+ / macOS 14+
 ## Tests
 - Included (Swift Testing). Run: swift test
 
+## Contributing
+Light contributions welcome. Please run `swift test` and keep GameCore UI-free.
+By contributing you agree to license your changes under MIT.
+
 ## Usage
 ```swift
 import GameCore
