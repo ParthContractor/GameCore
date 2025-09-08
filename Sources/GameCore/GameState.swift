@@ -1,3 +1,10 @@
+//
+//  GameState.swift
+//  GameCore
+//
+//  Created by Parth Contractor on 8/9/2025.
+//
+
 public enum Player: String, Sendable { case x, o }
 
 /// Value-type state for an N×N two-player Tic-Tac-Toe board.

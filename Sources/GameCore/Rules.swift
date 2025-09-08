@@ -1,30 +1,44 @@
-public enum GameStatus: Equatable, Sendable {
-    case playing
-    case win(Player)
-    case draw
-}
+//
+//  Rules.swift
+//  GameCore
+//
+//  Created by Parth Contractor on 8/9/2025.
+//
 
-/// Game rules (placeholder implementations for Step 1).
-/// Step 2 will implement full winner/draw detection.
+public enum GameStatus: Equatable, Sendable { case playing, win(Player), draw }
+
 public enum Rules {
-    /// Returns .playing if any cell is empty, else .draw.
-    public static func status(for state: GameState) -> GameStatus {
-        return state.board.contains(where: { $0 == nil }) ? .playing : .draw
+  public static func status(for s: GameState) -> GameStatus {
+    let n = s.n, b = s.board
+    for line in lines(n) {
+      if let p = b[line[0]], line.allSatisfy({ b[$0] == p }) { return .win(p) }
     }
+    return b.contains(where: { $0 == nil }) ? .playing : .draw
+  }
 
-    /// Returns indices of empty cells while game is .playing.
-    public static func legalMoves(_ state: GameState) -> [Int] {
-        guard case .playing = status(for: state) else { return [] }
-        return state.board.indices.filter { state.board[$0] == nil }
-    }
+  public static func legalMoves(_ s: GameState) -> [Int] {
+    guard case .playing = status(for: s) else { return [] }
+    return s.board.indices.filter { s.board[$0] == nil }
+  }
 
-    /// Place current player's mark at `move` and toggle player.
-    public static func apply(_ move: Int, to state: GameState) -> GameState {
-        precondition((0..<(state.n * state.n)).contains(move), "move out of range")
-        precondition(state.board[move] == nil, "illegal move: cell already taken")
-        var next = state
-        next.board[move] = state.current
-        next.current = (state.current == .x) ? .o : .x
-        return next
-    }
+  public static func apply(_ move: Int, to s: GameState) -> GameState {
+    guard case .playing = status(for: s) else { preconditionFailure("not playing") }
+    let limit = s.n * s.n
+    precondition((0..<limit).contains(move), "out of range")
+    precondition(s.board[move] == nil, "cell not empty")
+    var next = s
+    next.board[move] = s.current
+    next.current = (s.current == .x) ? .o : .x
+    return next
+  }
+
+  // All row/col/diag index sets for an N×N board.
+  private static func lines(_ n: Int) -> [[Int]] {
+    let rows = (0..<n).map { r in (0..<n).map { r*n + $0 } }
+    let cols = (0..<n).map { c in (0..<n).map { $0*n + c } }
+    let main = (0..<n).map { $0*(n+1) }
+    let anti = (0..<n).map { $0*n + (n-1-$0) }
+    return rows + cols + [main, anti]
+  }
 }
+
